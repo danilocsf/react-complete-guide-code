@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import classes from "./AddUser.module.css";
 
 import Card from "../UI/Card";
@@ -11,6 +11,15 @@ const AddUser = (props) => {
     const addUserHandler = (event) => {
         event.preventDefault();
         console.log(enteredUserName, enteredAge);
+        if(enteredUserName.trim().length === 0 || enteredAge.trim().length === 0){
+            return;
+        }
+        //Colocar + na frente da variavel força a transformar em numero
+        if(+enteredAge < 1){
+            return;
+        }
+        setEnteredAge('');
+        setEnteredUserName('');
     };
 
     const userNameChangeHandler = (event) => {
@@ -29,9 +38,16 @@ const AddUser = (props) => {
         <Card className={classes.input}>
             <form onSubmit={addUserHandler}>
                 <label htmlFor="username">Username</label>
-                <input type="text" id="username" onChange={userNameChangeHandler}/>
+                <input 
+                    type="text" 
+                    value={enteredUserName} 
+                    id="username" 
+                    onChange={userNameChangeHandler} />
                 <label htmlFor="age">Age</label>
-                <input type="number" id="age" onChange={ageChangeHandler}/>
+                <input 
+                    type="number" 
+                    id="age" 
+                    value={enteredUserName} />
                 <Button type="submit">Add User</Button>
             </form>
         </Card>
