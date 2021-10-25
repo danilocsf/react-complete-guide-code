@@ -4,6 +4,7 @@ import classes from "./AddUser.module.css";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
 import ErrorModal from '../UI/ErrorModal';
+import Wrapper from '../Helpers/Wrapper';
 
 const AddUser = (props) => {
     const [enteredUserName, setEnteredUserName] = useState('');
@@ -49,7 +50,7 @@ const AddUser = (props) => {
             Isso foi feit para que aqui neste component, ou qualquer component filho de card
             pudessem ser utilizados CSSs não definidos no component card, como por exemplo o input abaixo
          */
-        <div>
+        <Wrapper>
             {error && <ErrorModal 
                         title={error.title} 
                         message={error.message} 
@@ -71,7 +72,7 @@ const AddUser = (props) => {
                     <Button type="submit">Add User</Button>
                 </form>
             </Card>
-        </div>
+        </Wrapper>
     );
 };
 
