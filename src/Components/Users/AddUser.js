@@ -50,6 +50,7 @@ const AddUser = (props) => {
             Isso foi feit para que aqui neste component, ou qualquer component filho de card
             pudessem ser utilizados CSSs não definidos no component card, como por exemplo o input abaixo
          */
+        /*O Wrapper pode ser substituido por React.Fragment*/
         <Wrapper>
             {error && <ErrorModal 
                         title={error.title} 
