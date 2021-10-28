@@ -1,99 +1,105 @@
-import React, { useState, useEffect } from 'react';
+import React, { useReducer } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
 
+/*emailReducer será chamado automaticamente quando o dispatchEmail for executado*/
+const emailReducer = (state, action) =>{
+  if(action.type === 'USER_INPUT'){
+    return {value: action.val, isValid: action.val.includes('@') };  
+  }
+  if(action.type === 'INPUT_BLUR'){
+    return {value: state.value, isValid: state.value.includes('@') };  
+  }
+  return {value: '', isValid: false };
+};
+
+/*passwordReducer será chamado automaticamente quando o dispatchPassword for executado*/
+const passwordReducer = (state, action) =>{
+  if(action.type === 'USER_INPUT'){
+    return {value: action.val, isValid: action.val.trim().length > 6};  
+  }
+  if(action.type === 'INPUT_BLUR'){
+    return {value: state.value, isValid: state.value.trim().length > 6 };  
+  }
+  return {value: '', isValid: false };
+};
+
 const Login = (props) => {
-  const [enteredEmail, setEnteredEmail] = useState('');
-  const [emailIsValid, setEmailIsValid] = useState();
-  const [enteredPassword, setEnteredPassword] = useState('');
-  const [passwordIsValid, setPasswordIsValid] = useState();
-  const [formIsValid, setFormIsValid] = useState(false);
+  /*
+    - emailState - the latest state snapshot
+    - dispatchEmail - é uma função que permite alterar o estado.
+    Essa função irá enviar uma ação(automaticamente) para a função emailReducer, que é a responsável por alterar o estado
+    - emailReducer - função que irá alterar o estado / Recebe no primeiro parâmetro  o último estado e no segundo parâmetro é 
+    a ação enviada pelo dispatchEmail
+    - 2 paramtero de useReducer é a versão inicial do estado.
+  */
+  const [emailState, dispatchEmail] = useReducer(emailReducer, 
+    {
+      value: '', 
+      isValid: false 
+    });
 
-  /* Por padrão, useEffect roda depois da primeira renderização e depois de toda atualização.
-     Neste caso foram informadas dependências, então somente executará caso enteredEmail ou enteredPassword
-     tiveram alterações no último ciclo de renderização do componente.
-    */
-  useEffect(() => {
-    /*Utilizando esta função para que a verificação se o formulário é válido ocorra após 500 milisegundos
-      após o usuário parar de digitar.
-      Sem o setTimeut, a cada vez que o usuário pressionasse uma tecla, passaria aqui.
-      Com o setTimeout, cada vez que o usuário digita uma tecla, inicia-se o contador de tempo antes de executar a função.
-      Caso atinja s 500 milisegundos configurados, executa-se a função.
-      Caso o usuário pressione outra tecla enquanto o timer está sendo contabilizado (ou seja, antes dos 500 milisegundos), 
-      o timer é reiniciado no cleanup function, portanto a função só será executada uma ve após 500 milisegundos que o usuário parou de digitar.
-    */
-    const identifier = setTimeout(() => {
-      console.log('Checking form validity');
-      setFormIsValid(
-        enteredEmail.includes('@') && enteredPassword.trim().length > 6
-      );
-    }, 500);
-    /*cleanup function = é executado toda vez que useEffect é executado, porém antes de useEffect ser executado, com exceção
-      da primeira execução de useEffect .
-      Pode ser uma função anônima ou nomeada
-    */ 
-    return () => {
-      console.log('Cleaning up');
-      clearTimeout(identifier);
+    const [passwordState, dispatchPassword] = useReducer(passwordReducer, 
+      {
+        value: '', 
+        isValid: false 
+      });
+  
+
+    const emailChangeHandler = (event) => {
+      dispatchEmail({type: 'USER_INPUT', val: event.target.value});
     };
-  },
-    [enteredEmail, enteredPassword]
-  );
-
-  const emailChangeHandler = (event) => {
-    setEnteredEmail(event.target.value);
-  };
-
-  const passwordChangeHandler = (event) => {
-    setEnteredPassword(event.target.value);
-  };
+  
+    const passwordChangeHandler = (event) => {
+      dispatchPassword({type: 'USER_INPUT', val: event.target.value});
+    };
 
   const validateEmailHandler = () => {
-    setEmailIsValid(enteredEmail.includes('@'));
+    dispatchEmail({type: 'INPUT_BLUR'});    
   };
 
   const validatePasswordHandler = () => {
-    setPasswordIsValid(enteredPassword.trim().length > 6);
+    dispatchPassword({type: 'INPUT_BLUR'});    
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(enteredEmail, enteredPassword);
+    props.onLogin(emailState.value, passwordState.value);
   };
 
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
         <div
-          className={`${classes.control} ${emailIsValid === false ? classes.invalid : ''
+          className={`${classes.control} ${emailState.isValid === false ? classes.invalid : ''
             }`}
         >
           <label htmlFor="email">E-Mail</label>
           <input
             type="email"
             id="email"
-            value={enteredEmail}
+            value={emailState.value}
             onChange={emailChangeHandler}
             onBlur={validateEmailHandler}
           />
         </div>
         <div
-          className={`${classes.control} ${passwordIsValid === false ? classes.invalid : ''
+          className={`${classes.control} ${passwordState.isValid === false ? classes.invalid : ''
             }`}
         >
           <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
-            value={enteredPassword}
+            value={passwordState.value}
             onChange={passwordChangeHandler}
             onBlur={validatePasswordHandler}
           />
         </div>
         <div className={classes.actions}>
-          <Button type="submit" className={classes.btn} disabled={!formIsValid}>
+          <Button type="submit" className={classes.btn} disabled={!passwordState.isValid || !emailState.isValid}>
             Login
           </Button>
         </div>
