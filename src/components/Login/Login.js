@@ -1,29 +1,30 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useContext } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
+import AuthContext from '../../Context/auth-context';
 
 /*emailReducer será chamado automaticamente quando o dispatchEmail for executado*/
-const emailReducer = (state, action) =>{
-  if(action.type === 'USER_INPUT'){
-    return {value: action.val, isValid: action.val.includes('@') };  
+const emailReducer = (state, action) => {
+  if (action.type === 'USER_INPUT') {
+    return { value: action.val, isValid: action.val.includes('@') };
   }
-  if(action.type === 'INPUT_BLUR'){
-    return {value: state.value, isValid: state.value.includes('@') };  
+  if (action.type === 'INPUT_BLUR') {
+    return { value: state.value, isValid: state.value.includes('@') };
   }
-  return {value: '', isValid: false };
+  return { value: '', isValid: false };
 };
 
 /*passwordReducer será chamado automaticamente quando o dispatchPassword for executado*/
-const passwordReducer = (state, action) =>{
-  if(action.type === 'USER_INPUT'){
-    return {value: action.val, isValid: action.val.trim().length > 6};  
+const passwordReducer = (state, action) => {
+  if (action.type === 'USER_INPUT') {
+    return { value: action.val, isValid: action.val.trim().length > 6 };
   }
-  if(action.type === 'INPUT_BLUR'){
-    return {value: state.value, isValid: state.value.trim().length > 6 };  
+  if (action.type === 'INPUT_BLUR') {
+    return { value: state.value, isValid: state.value.trim().length > 6 };
   }
-  return {value: '', isValid: false };
+  return { value: '', isValid: false };
 };
 
 const Login = (props) => {
@@ -35,41 +36,45 @@ const Login = (props) => {
     a ação enviada pelo dispatchEmail
     - 2 paramtero de useReducer é a versão inicial do estado.
   */
-  const [emailState, dispatchEmail] = useReducer(emailReducer, 
+  const [emailState, dispatchEmail] = useReducer(emailReducer,
     {
-      value: '', 
-      isValid: false 
+      value: '',
+      isValid: false
     });
 
-    const [passwordState, dispatchPassword] = useReducer(passwordReducer, 
-      {
-        value: '', 
-        isValid: false 
-      });
-  
+  const [passwordState, dispatchPassword] = useReducer(passwordReducer,
+    {
+      value: '',
+      isValid: false
+    });
 
-    const emailChangeHandler = (event) => {
-      dispatchEmail({type: 'USER_INPUT', val: event.target.value});
-    };
-  
-    const passwordChangeHandler = (event) => {
-      dispatchPassword({type: 'USER_INPUT', val: event.target.value});
-    };
+  const ctx = useContext(AuthContext);
+
+  const emailChangeHandler = (event) => {
+    dispatchEmail({ type: 'USER_INPUT', val: event.target.value });
+  };
+
+  const passwordChangeHandler = (event) => {
+    dispatchPassword({ type: 'USER_INPUT', val: event.target.value });
+  };
 
   const validateEmailHandler = () => {
-    dispatchEmail({type: 'INPUT_BLUR'});    
+    dispatchEmail({ type: 'INPUT_BLUR' });
   };
 
   const validatePasswordHandler = () => {
-    dispatchPassword({type: 'INPUT_BLUR'});    
+    dispatchPassword({ type: 'INPUT_BLUR' });
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(emailState.value, passwordState.value);
+    ctx.onLogin(emailState.value, passwordState.value);
   };
 
+
+
   return (
+
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
         <div
