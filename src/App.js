@@ -33,7 +33,8 @@ function App() {
   return (
     /*<Authcontext.Provider> - todos os componentes que estão abaixo dessa tag, terão acesso ao auth context*/
     <Authcontext.Provider value={{
-      isLoggedIn: isLoggedIn
+      isLoggedIn: isLoggedIn,
+      onLogout: logoutHandler
     }}>
       <MainHeader onLogout={logoutHandler} />
       <main>
