@@ -1,5 +1,5 @@
 import React from 'react';
-import mealsImage from '../../assests/meals.jog'
+import mealsImage from '../../assets/meals.jpg'
 import classes from './Header.module.css'
 
 const Header = (props) => {
